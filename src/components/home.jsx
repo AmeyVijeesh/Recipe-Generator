@@ -46,6 +46,7 @@ const Home = () => {
   const handlePaleoChange = (event) => {
     setIsPaleo(event.target.checked);
   };
+  const apiKey = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY;
 
   const handleSearch = async () => {
     setIsLoading(true);
@@ -54,7 +55,7 @@ const Home = () => {
         'https://api.spoonacular.com/recipes/complexSearch',
         {
           params: {
-            apiKey: '669fd0bd0f014fe383ac6b90e7c4deef',
+            apiKey: apiKey,
             query: searchQuery,
             cuisine: cuisine,
             type: type,
@@ -62,7 +63,8 @@ const Home = () => {
               isVegan ? 'vegan,' : ''
             }${isGlutenFree ? 'gluten free,' : ''}${
               isDairyFree ? 'dairy free,' : ''
-            }${isPaleo ? 'paleo' : ''}`, // Include selected dietary preferences or restrictions
+            }${isPaleo ? 'paleo' : ''}`,
+            includeIngredients: '',
           },
         }
       );
