@@ -62,7 +62,7 @@ const Home = () => {
               isVegan ? 'vegan,' : ''
             }${isGlutenFree ? 'gluten free,' : ''}${
               isDairyFree ? 'dairy free,' : ''
-            }${isPaleo ? 'paleo' : ''}`, // Include selected dietary preferences or restrictions
+            }${isPaleo ? 'paleo' : ''}`,
           },
         }
       );
