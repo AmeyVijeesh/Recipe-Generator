@@ -13,7 +13,8 @@ const Home = () => {
   const [isVegan, setIsVegan] = useState(false);
   const [isGlutenFree, setIsGlutenFree] = useState(false);
   const [isDairyFree, setIsDairyFree] = useState(false);
-  const [isPaleo, setIsPaleo] = useState(false);
+  const [bitterness, setBitterness] = useState(0.1);
+  const [isHealthy, setIsHealthy] = useState(false);
 
   const handleChange = (event) => {
     setSearchQuery(event.target.value);
@@ -43,9 +44,6 @@ const Home = () => {
     setIsDairyFree(event.target.checked);
   };
 
-  const handlePaleoChange = (event) => {
-    setIsPaleo(event.target.checked);
-  };
   const apiKey = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY;
 
   const handleSearch = async () => {
@@ -63,7 +61,7 @@ const Home = () => {
               isVegan ? 'vegan,' : ''
             }${isGlutenFree ? 'gluten free,' : ''}${
               isDairyFree ? 'dairy free,' : ''
-            }${isPaleo ? 'paleo' : ''}`,
+            }`,
           },
         }
       );
@@ -82,11 +80,15 @@ const Home = () => {
         `https://api.spoonacular.com/recipes/${recipe.id}/information`,
         {
           params: {
-            apiKey: '669fd0bd0f014fe383ac6b90e7c4deef',
+            apiKey: apiKey,
+            addTasteData: true,
           },
         }
       );
       setSelectedRecipe(response.data);
+      setIsHealthy(response.data.veryHealthy);
+      console.log(JSON.stringify(response.data, null, 2));
+      setBitterness(response.data.tasteScore);
     } catch (error) {
       console.error('Error fetching recipe details:', error);
     } finally {
@@ -163,19 +165,10 @@ const Home = () => {
           <label>Dairy-Free</label>
         </div>
 
-        <div>
-          <input
-            type="checkbox"
-            checked={isPaleo}
-            onChange={handlePaleoChange}
-          />
-          <label>Paleo</label>
-        </div>
-
         <button onClick={handleSearch} disabled={isLoading}>
           {isLoading ? 'Searching...' : 'Search Recipes'}
         </button>
-        {searchResults.length > 0 && (
+        {searchResults.length > 0 ? (
           <div>
             <h2>Search Results:</h2>
             <ul>
@@ -188,10 +181,19 @@ const Home = () => {
               ))}
             </ul>
           </div>
+        ) : (
+          <p>No results available.</p>
         )}
       </div>
       {selectedRecipe && (
-        <RecipeDetails recipe={selectedRecipe} onClose={closeRecipeDetails} />
+        <RecipeDetails
+          recipe={selectedRecipe}
+          onClose={closeRecipeDetails}
+          isVegan={isVegan}
+          isGlutenFree={isGlutenFree}
+          tasteData={bitterness}
+          isHealthy={isHealthy}
+        />
       )}
     </>
   );
