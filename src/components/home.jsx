@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RecipeDetails from './recipeDetails';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,6 +16,8 @@ const Home = () => {
   const [isDairyFree, setIsDairyFree] = useState(false);
   const [bitterness, setBitterness] = useState(0.1);
   const [isHealthy, setIsHealthy] = useState(false);
+  const [ins, setIns] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setSearchQuery(event.target.value);
@@ -46,6 +49,10 @@ const Home = () => {
 
   const apiKey = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY;
 
+  useEffect(() => {
+    console.log('ins:', ins);
+  }, [ins]); // Run this effect whenever ins changes
+
   const handleSearch = async () => {
     setIsLoading(true);
     try {
@@ -65,6 +72,7 @@ const Home = () => {
           },
         }
       );
+      console.log('API Response:', response.data); // Log the response data to check for extendedIngredients and instructions
       setSearchResults(response.data.results);
     } catch (error) {
       console.error('Error searching recipes:', error);
@@ -87,17 +95,20 @@ const Home = () => {
       );
       setSelectedRecipe(response.data);
       setIsHealthy(response.data.veryHealthy);
-      console.log(JSON.stringify(response.data, null, 2));
+      setIsVegan(response.data.vegan);
+      setIsGlutenFree(response.data.glutenFree);
       setBitterness(response.data.tasteScore);
+      console.log(JSON.stringify(response.data, null, 2));
+      navigate(`/recipe/${recipe.id}`, {
+        state: {
+          recipe: response.data,
+        },
+      });
     } catch (error) {
       console.error('Error fetching recipe details:', error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const closeRecipeDetails = () => {
-    setSelectedRecipe(null);
   };
 
   return (
@@ -177,6 +188,13 @@ const Home = () => {
                   <h3>{recipe.title}</h3>
                   <img src={recipe.image} alt={recipe.title} />
                   <p>Click here for instructions and details</p>
+                  <button
+                    onClick={() => {
+                      console.log('ei ' + JSON.stringify(recipe));
+                    }}
+                  >
+                    debug
+                  </button>
                 </li>
               ))}
             </ul>
@@ -193,8 +211,16 @@ const Home = () => {
           isGlutenFree={isGlutenFree}
           tasteData={bitterness}
           isHealthy={isHealthy}
+          ins={ins} // Pass ins instead of inst
         />
       )}
+      <button
+        onClick={() => {
+          console.log(ins);
+        }}
+      >
+        pisdfj
+      </button>
     </>
   );
 };
