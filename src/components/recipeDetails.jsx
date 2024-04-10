@@ -1,7 +1,6 @@
 import React from 'react';
 
 const RecipeDetails = ({ recipe, onClose }) => {
-  console.log(recipe); // Add this line for debugging
 
   return (
     <div>

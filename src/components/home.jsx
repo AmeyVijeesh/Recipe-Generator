@@ -64,7 +64,6 @@ const Home = () => {
             }${isGlutenFree ? 'gluten free,' : ''}${
               isDairyFree ? 'dairy free,' : ''
             }${isPaleo ? 'paleo' : ''}`,
-            includeIngredients: '',
           },
         }
       );
