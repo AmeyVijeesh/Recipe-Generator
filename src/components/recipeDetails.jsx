@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const RecipeDetails = ({ onClose, isVegan, isGlutenFree, isHealthy, ins }) => {
   const { state } = useLocation();
   const recipe = state && state.recipe;
+  const navigate = useNavigate();
 
   if (!recipe) {
     // Handle if recipe data is not available
@@ -15,6 +16,13 @@ const RecipeDetails = ({ onClose, isVegan, isGlutenFree, isHealthy, ins }) => {
 
   return (
     <div>
+      <button
+        onClick={() => {
+          navigate('/');
+        }}
+      >
+        Home
+      </button>
       <h2>{recipe.title}</h2>
       <button
         onClick={() => {
