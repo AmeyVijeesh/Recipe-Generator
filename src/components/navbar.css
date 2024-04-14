@@ -1,0 +1,59 @@
+.navbar-dark .nav-item .nav-link {
+  color: #fff;
+}
+
+.navbar-dark .nav-item .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  border-radius: 0.25rem;
+  color: #fff;
+}
+
+.fa-li {
+  position: relative;
+  left: 0;
+}
+
+/* Dropdown Button */
+.dropdown button {
+  background-color: #007bff; /* Blue */
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+/* Dropdown Menu */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  right: 0; /* Align the dropdown to the right edge */
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-menu {
+  display: block;
+  left: auto; /* Reset left position */
+}
+
+/* Dropdown Item */
+.dropdown-item {
+  color: black;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown items on hover */
+.dropdown-item:hover {
+  background-color: #ddd;
+}
+
+/* Divider */
+.dropdown-divider {
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+}

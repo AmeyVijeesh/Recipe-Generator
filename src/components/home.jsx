@@ -3,7 +3,7 @@ import axios from 'axios';
 import RecipeDetails from './recipeDetails';
 import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from './firebase.js';
+import { auth, db, storage } from './firebase.js';
 import {
   collection,
   query,
@@ -15,14 +15,18 @@ import {
   setDoc,
   serverTimestamp,
   deleteDoc,
+  getFirestore,
 } from 'firebase/firestore';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  onAuthStateChanged,
 } from 'firebase/auth';
+import UploadProfilePicture from './fav.jsx';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const Home = () => {
+const Home = ({ user, setUser, name, setName }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [type, setType] = useState('');
@@ -41,28 +45,114 @@ const Home = () => {
   const [favName, setFavName] = useState('');
 
   const [todos, setTodos] = useState([]);
-  const [input, setInput] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
 
-  // Listen for changes in favorites when user changes
+  const firestore = getFirestore();
+
+  // Function to handle file upload
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    const storageRef = ref(
+      storage,
+      `profile_pictures/${user.uid}/${file.name}`
+    );
+    try {
+      // Upload file to Firebase Storage
+      await uploadBytes(storageRef, file);
+
+      // Get download URL of the uploaded file
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Update user's profile picture URL in Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, { profilePic: downloadURL }, { merge: true });
+
+      // Update local state
+      setProfilePicture(downloadURL);
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+    }
+  };
+
+  const fetchProfilePicture = async () => {
+    try {
+      if (user && user.uid) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const docSnapshot = await getDoc(userDocRef);
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data();
+          setProfilePicture(userData.profilePic);
+        }
+      } else {
+        setProfilePicture(
+          'https://th.bing.com/th/id/OIP.hmLglIuAaL31MXNFuTGBgAAAAA?rs=1&pid=ImgDetMain'
+        );
+      }
+    } catch (error) {
+      console.error('Error fetching profile picture:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchProfilePicture();
+    }
+  }, [user]);
+
   useEffect(() => {
     const fetchFavorites = async () => {
-      if (user) {
-        const favoritesRef = doc(db, 'favorites', user.uid);
-        const favoritesSnapshot = await getDoc(favoritesRef);
-        if (favoritesSnapshot.exists()) {
-          setFavorites(favoritesSnapshot.data());
+      try {
+        if (user && user.uid) {
+          // Add a null check for user and user.uid
+          const favoritesRef = doc(db, 'favorites', user.uid);
+          const favoritesSnapshot = await getDoc(favoritesRef);
+          if (favoritesSnapshot.exists()) {
+            setFavorites(favoritesSnapshot.data());
+          } else {
+            setFavorites({});
+          }
         } else {
           setFavorites({});
         }
-      } else {
-        setFavorites({});
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
       }
     };
 
     fetchFavorites();
+  }, [user]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user); // Update the user state if a user is signed in
+      } else {
+        setUser(null); // Clear the user state if no user is signed in
+      }
+    });
+
+    // Clean up the listener when component unmounts
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        if (user && user.uid) {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDocSnapshot = await getDoc(userDocRef);
+
+          const userData = userDocSnapshot.data();
+          // Use the display name if available, otherwise use the email
+          setName(userData.name || user.email);
+          console.log(userData);
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+      }
+    };
+
+    fetchUserName();
   }, [user]);
 
   const toggleFavorite = async (recipeId, recipeName) => {
@@ -198,36 +288,10 @@ const Home = () => {
     }
   }, [user]);
 
-  const signUp = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      setUser(userCredential.user);
-    } catch (error) {
-      console.error('Error signing up:', error);
-    }
-  };
-
-  const signIn = async (email, password) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      setUser(userCredential.user);
-    } catch (error) {
-      console.error('Error signing in:', error);
-    }
-  };
-
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      setUser(null);
+      setUser(null); // Call setUser function to update user state
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -235,50 +299,42 @@ const Home = () => {
 
   return (
     <>
+      <button
+        onClick={() => {
+          navigate('/auth');
+        }}
+      >
+        Auth
+      </button>
+      <button
+        onClick={() => {
+          console.log('name: ' + name);
+          console.log(name);
+        }}
+      >
+        Clciks
+      </button>
       <div>
         {user ? (
-          <Button onClick={handleSignOut} variant="contained" color="secondary">
-            Sign Out
-          </Button>
+          <div>
+            <h2>Yo {name}!</h2>
+            <Button
+              onClick={handleSignOut}
+              variant="contained"
+              color="secondary"
+            >
+              Sign Out
+            </Button>
+          </div>
         ) : (
-          <h1>Sign in plz</h1>
+          <h1>Sign in please</h1>
         )}
-
-        <div>
-          <TextField
-            id="outlined-basic"
-            label="Email"
-            variant="outlined"
-            style={{ margin: '0px 5px' }}
-            size="small"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            id="outlined-basic"
-            label="Password"
-            variant="outlined"
-            style={{ margin: '0px 5px' }}
-            size="small"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            onClick={() => signIn(email, password)}
-            variant="contained"
-            color="primary"
-          >
-            Sign In
-          </Button>
-          <Button
-            onClick={() => signUp(email, password)}
-            variant="contained"
-            color="primary"
-          >
-            Sign Up
-          </Button>
-        </div>
       </div>
+      {profilePicture ? (
+        <img src={profilePicture} />
+      ) : (
+        <img src="https://th.bing.com/th/id/OIP.hmLglIuAaL31MXNFuTGBgAAAAA?rs=1&pid=ImgDetMain" />
+      )}
       <h2>
         {' '}
         favs "{' '}
@@ -298,8 +354,8 @@ const Home = () => {
           <p>No favorites added yet.</p>
         )}
       </h2>
-      <button>Open it!</button>
-
+      <button>Open it!</button>{' '}
+      <input type="file" accept="image/*" onChange={handleFileUpload} />
       <div>
         <h1>Recipe Search</h1>
         <input
