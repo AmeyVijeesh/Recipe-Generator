@@ -23,10 +23,16 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
-import UploadProfilePicture from './fav.jsx';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const Home = ({ user, setUser, name, setName }) => {
+const Home = ({
+  user,
+  setUser,
+  name,
+  setName,
+  profilePicture,
+  setProfilePicture,
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [type, setType] = useState('');
@@ -43,13 +49,10 @@ const Home = ({ user, setUser, name, setName }) => {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState({});
   const [favName, setFavName] = useState('');
+  const [healthScore, setHealthScore] = useState(0);
 
   const [todos, setTodos] = useState([]);
-  const [profilePicture, setProfilePicture] = useState(null);
 
-  const firestore = getFirestore();
-
-  // Function to handle file upload
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     const storageRef = ref(
@@ -57,17 +60,13 @@ const Home = ({ user, setUser, name, setName }) => {
       `profile_pictures/${user.uid}/${file.name}`
     );
     try {
-      // Upload file to Firebase Storage
       await uploadBytes(storageRef, file);
 
-      // Get download URL of the uploaded file
       const downloadURL = await getDownloadURL(storageRef);
 
-      // Update user's profile picture URL in Firestore
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, { profilePic: downloadURL }, { merge: true });
 
-      // Update local state
       setProfilePicture(downloadURL);
     } catch (error) {
       console.error('Error uploading profile picture:', error);
@@ -103,7 +102,6 @@ const Home = ({ user, setUser, name, setName }) => {
     const fetchFavorites = async () => {
       try {
         if (user && user.uid) {
-          // Add a null check for user and user.uid
           const favoritesRef = doc(db, 'favorites', user.uid);
           const favoritesSnapshot = await getDoc(favoritesRef);
           if (favoritesSnapshot.exists()) {
@@ -125,13 +123,12 @@ const Home = ({ user, setUser, name, setName }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user); // Update the user state if a user is signed in
+        setUser(user);
       } else {
-        setUser(null); // Clear the user state if no user is signed in
+        setUser(null);
       }
     });
 
-    // Clean up the listener when component unmounts
     return unsubscribe;
   }, []);
 
@@ -143,7 +140,6 @@ const Home = ({ user, setUser, name, setName }) => {
           const userDocSnapshot = await getDoc(userDocRef);
 
           const userData = userDocSnapshot.data();
-          // Use the display name if available, otherwise use the email
           setName(userData.name || user.email);
           console.log(userData);
         }
@@ -156,7 +152,7 @@ const Home = ({ user, setUser, name, setName }) => {
   }, [user]);
 
   const toggleFavorite = async (recipeId, recipeName) => {
-    if (!user) return; // Check if user is authenticated
+    if (!user) return;
 
     const userFavoritesRef = doc(db, 'favorites', user.uid);
     let updatedFavorites = { ...favorites };
@@ -167,16 +163,11 @@ const Home = ({ user, setUser, name, setName }) => {
       updatedFavorites[recipeId] = recipeName;
     }
 
-    // Update favorites in Firestore
     if (Object.keys(updatedFavorites).length === 0) {
-      // If updatedFavorites is empty, delete the entire document
       await deleteDoc(userFavoritesRef);
     } else {
-      // Otherwise, update the document with the modified favorites
       await setDoc(userFavoritesRef, updatedFavorites);
     }
-
-    // Update local state
     setFavorites(updatedFavorites);
   };
 
@@ -209,11 +200,8 @@ const Home = ({ user, setUser, name, setName }) => {
   };
 
   const apiKey = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY;
-
-  useEffect(() => {
-    console.log('ins:', ins);
-  }, [ins]); // Run this effect whenever ins changes
-
+  const apiKey2 = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY2;
+  const apiKey3 = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY_BALANCE;
   const handleSearch = async () => {
     setIsLoading(true);
     try {
@@ -257,9 +245,11 @@ const Home = ({ user, setUser, name, setName }) => {
       setSelectedRecipe(response.data);
       setIsHealthy(response.data.veryHealthy);
       setIsVegan(response.data.vegan);
+      setHealthScore(response.data.healthScore);
       setIsGlutenFree(response.data.glutenFree);
-      setBitterness(response.data.tasteScore);
       console.log(JSON.stringify(response.data, null, 2));
+      console.log(response.data.healthScore);
+      console.log(healthScore);
       navigate(`/recipe/${recipe.id}`, {
         state: {
           recipe: response.data,
@@ -271,6 +261,12 @@ const Home = ({ user, setUser, name, setName }) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedRecipe) {
+      setHealthScore(selectedRecipe.healthScore);
+    }
+  }, [selectedRecipe]);
 
   useEffect(() => {
     if (user) {
@@ -291,7 +287,7 @@ const Home = ({ user, setUser, name, setName }) => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      setUser(null); // Call setUser function to update user state
+      setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -305,14 +301,6 @@ const Home = ({ user, setUser, name, setName }) => {
         }}
       >
         Auth
-      </button>
-      <button
-        onClick={() => {
-          console.log('name: ' + name);
-          console.log(name);
-        }}
-      >
-        Clciks
       </button>
       <div>
         {user ? (
@@ -330,11 +318,6 @@ const Home = ({ user, setUser, name, setName }) => {
           <h1>Sign in please</h1>
         )}
       </div>
-      {profilePicture ? (
-        <img src={profilePicture} />
-      ) : (
-        <img src="https://th.bing.com/th/id/OIP.hmLglIuAaL31MXNFuTGBgAAAAA?rs=1&pid=ImgDetMain" />
-      )}
       <h2>
         {' '}
         favs "{' '}
@@ -343,7 +326,6 @@ const Home = ({ user, setUser, name, setName }) => {
             {Object.entries(favorites).map(([recipeId, recipeName]) => (
               <li key={recipeId}>
                 <p>{recipeName}</p>
-                {/* Add a button to remove the favorite */}
                 <button onClick={() => toggleFavorite(recipeId, recipeName)}>
                   Remove from Favorites
                 </button>
@@ -456,6 +438,7 @@ const Home = ({ user, setUser, name, setName }) => {
           isGlutenFree={isGlutenFree}
           tasteData={bitterness}
           isHealthy={isHealthy}
+          healthScore={healthScore}
           ins={ins} // Pass ins instead of inst
         />
       )}

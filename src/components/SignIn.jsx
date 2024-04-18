@@ -59,11 +59,15 @@ const SignIn = ({ setUser }) => {
                   Sign In to Recipes
                 </p>
                 <span>
-                  <a onClick={signInWithGoogle}>Login with Google</a>
+                  <a onClick={signInWithGoogle} className="btns">
+                    Login with Google
+                  </a>
+
                   <a
                     onClick={() => {
                       navigate('/signup');
                     }}
+                    className="btns"
                   >
                     Create an Account
                   </a>

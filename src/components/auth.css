@@ -44,7 +44,7 @@
   color: #ffffff;
   background-size: cover;
   background-repeat: no-repeat;
-  background-image: url('https://th.bing.com/th/id/OIP.9OU5tQP8va703FHMdQoMXQHaEK?rs=1&pid=ImgDetMain');
+  background-image: url('https://th.bing.com/th/id/R.76fe2afc065d800c4df57ab3fa174c47?rik=rnFoo%2fJ%2bGrZ6wQ&riu=http%3a%2f%2fevolutionarydesigns.net%2fphotography%2fwp-content%2fuploads%2f2011%2f10%2fstore-1-vintage-2.jpg&ehk=ETHaIJufXT%2b54mshlzPrHH2B%2funrjDK2F1jOU24%2b3vM%3d&risl=&pid=ImgRaw&r=0');
   overflow: hidden;
 }
 .box-form .left .overlay {
@@ -93,11 +93,6 @@
   display: inline-block;
   box-shadow: 0 3px 6px 1px #042d4657;
 }
-.box-form .left .overlay span a:hover {
-  background-color: #000;
-  color: #fff;
-}
-
 .box-form .right {
   padding: 40px;
   overflow: hidden;
@@ -155,48 +150,6 @@
   background-color: #ffffff;
 }
 
-label {
-  display: block;
-  position: relative;
-  margin-left: 30px;
-}
-
-label::before {
-  content: ' \f00c';
-  position: absolute;
-  font-family: FontAwesome;
-  background: transparent;
-  border: 3px solid #000000;
-  border-radius: 4px;
-  color: transparent;
-  left: -30px;
-  transition: all 0.2s linear;
-}
-
-label:hover::before {
-  font-family: FontAwesome;
-  content: ' \f00c';
-  color: #fff;
-  cursor: pointer;
-  background: #000000;
-}
-
-label:hover::before .text-checkbox {
-  background: #000000;
-}
-
-label span.text-checkbox {
-  display: inline-block;
-  height: auto;
-  position: relative;
-  cursor: pointer;
-  transition: all 0.2s linear;
-}
-
-label input[type='checkbox'] {
-  display: none;
-}
-
 .submitButton {
   color: #fff;
   font-size: 16px;
@@ -218,4 +171,9 @@ label input[type='checkbox'] {
 .box-form .right p {
   font-size: 14px;
   color: #b0b3b9;
+}
+
+.btns:hover {
+  background-color: #000;
+  color: #fff;
 }

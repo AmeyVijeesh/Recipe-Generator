@@ -34,9 +34,6 @@ const SignUp = ({ setUser }) => {
         password
       );
 
-      // Send email verification
-      await sendEmailVerification(auth.currentUser);
-
       const userId = userCredential.user.uid;
 
       await setDoc(doc(db, 'users', userId), {
@@ -45,14 +42,7 @@ const SignUp = ({ setUser }) => {
       });
 
       setUser(userCredential.user);
-
-      if (!isEmailVerified) {
-        alert(
-          $`An email has been sent to ${email}. Please click the link in the email to verify your account.`
-        );
-      } else {
-        navigate('/');
-      }
+      navigate('/'); // Directly navigate to the desired route
     } catch (error) {
       console.error('Error signing up:', error);
     }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { NavLink, useNavigate } from 'react-router-dom';
-import './test.css';
+import './auth.css';
 
 const Test = () => {
   return (

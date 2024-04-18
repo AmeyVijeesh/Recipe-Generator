@@ -1,0 +1,172 @@
+.container {
+  display: flex;
+  justify-content: left;
+}
+
+.recipe {
+  border-radius: 10px;
+  text-align: left;
+  margin: 10px;
+  width: 200vh;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.recipe:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.recipe-img {
+  width: auto;
+  height: 25vh;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.recipe-title {
+  margin-top: 10px;
+  text-align: center;
+  color: #000;
+}
+
+.recipe-metadata {
+  font-size: 14px;
+  color: #000000;
+  text-align: center;
+}
+
+.recipe-desc {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.recipe-save {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.favorites-button {
+  background-color: #000;
+  color: #fff;
+  border: 0;
+  border-radius: 5px;
+  padding: 7px;
+  margin: 10px;
+}
+.favorites-button:hover {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .recipe {
+    width: 100%;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+}
+
+.filtering-interface {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.toggle-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.options-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.option {
+  margin-bottom: 10px;
+}
+
+.option label {
+  display: block;
+}
+
+.option input[type='text'] {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.expanded .toggle-button::after {
+  content: '\25B2';
+}
+
+.expanded .options-container {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .options-container {
+    width: 100%;
+  }
+}
+
+.search-input {
+  width: 80%;
+  margin: 20rem;
+}
+
+.search-button {
+  margin: 10px;
+}
+
+.filter-interface {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 90%;
+  border-radius: 10px;
+  padding: 2%;
+}
+
+.filter-title {
+  text-align: center;
+  text-decoration: underline;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.8rem;
+}
+
+.filter-div {
+  width: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.recipes-title {
+  text-align: center;
+  margin: 5%;
+}
+
+.add-more {
+  text-align: center;
+  border: 0;
+  background-color: #fff;
+  margin: 5%;
+}

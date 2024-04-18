@@ -2,7 +2,14 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const RecipeDetails = ({ onClose, isVegan, isGlutenFree, isHealthy, ins }) => {
+const RecipeDetails = ({
+  onClose,
+  isVegan,
+  isGlutenFree,
+  isHealthy,
+  ins,
+  healthScore,
+}) => {
   const { state } = useLocation();
   const recipe = state && state.recipe;
   const navigate = useNavigate();
@@ -41,7 +48,10 @@ const RecipeDetails = ({ onClose, isVegan, isGlutenFree, isHealthy, ins }) => {
           ))}
       </ul>
       <h2>Is Healthy : {isHealthy ? 'Yes' : 'No'}</h2>
-      <span>{isVegan ? 'Vegan' : 'No '}</span>
+      <span>is vegan: {isVegan ? 'Vegan' : 'No '}</span>{' '}
+      <span>is gluten: {isGlutenFree ? 'glutenfree' : 'No '}</span>
+      <span>{ins}</span>
+      <p>Health Score: {healthScore}</p>
       <h3>Instructions:</h3>
       {instructions && (
         <ul>
@@ -53,7 +63,6 @@ const RecipeDetails = ({ onClose, isVegan, isGlutenFree, isHealthy, ins }) => {
             ))}
         </ul>
       )}
-
       <button onClick={onClose}>Close</button>
     </div>
   );

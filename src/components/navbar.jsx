@@ -1,10 +1,9 @@
 import React from 'react';
 import './navbar.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { NavLink } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 
-const Navbar = ({ isAuthenticated, handleSignOut }) => {
+const Navbar = ({ isAuthenticated, handleSignOut, profilePicture }) => {
   return (
     <>
       <nav className="navbar navbar-expand-lg fixed-top navbar-light bg-light">
@@ -29,17 +28,21 @@ const Navbar = ({ isAuthenticated, handleSignOut }) => {
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="#">
-                  <NavLink to="/">Home</NavLink>
+                  <NavLink to="/" className="navbar-link">
+                    Home
+                  </NavLink>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  Recipes
+                  <NavLink className="navbar-link" to={'/recipes'}>
+                    Recipes
+                  </NavLink>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  Featured
+                  <NavLink to={'/favorites'}>Featured</NavLink>
                 </a>
               </li>
               <li class="nav-item">
@@ -74,12 +77,27 @@ const Navbar = ({ isAuthenticated, handleSignOut }) => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <img
-                  src="https://mdbootstrap.com/img/Photos/Avatars/img%20(2).jpg"
-                  class="rounded-circle img-fluid"
-                  height="25"
-                  width="25"
-                />
+                {profilePicture ? (
+                  <img
+                    src={profilePicture}
+                    class="rounded-circle img-fluid"
+                    height="25"
+                    width="25"
+                  />
+                ) : (
+                  <img
+                    src={
+                      profilePicture ? (
+                        <img src={profilePicture} />
+                      ) : (
+                        <img src="https://th.bing.com/th/id/OIP.hmLglIuAaL31MXNFuTGBgAAAAA?rs=1&pid=ImgDetMain" />
+                      )
+                    }
+                    class="rounded-circle img-fluid"
+                    height="25px"
+                    width="25px"
+                  />
+                )}
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
