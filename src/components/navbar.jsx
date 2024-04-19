@@ -9,7 +9,7 @@ const Navbar = ({ isAuthenticated, handleSignOut, profilePicture }) => {
       <nav className="navbar navbar-expand-lg fixed-top navbar-light bg-light">
         <div className="container-fluid">
           <a className="navbar-brand" href="#">
-            <span>Recipes</span>
+            <NavLink to="/">Recipes</NavLink>
           </a>
 
           <button
@@ -42,7 +42,9 @@ const Navbar = ({ isAuthenticated, handleSignOut, profilePicture }) => {
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <NavLink to={'/favorites'}>Featured</NavLink>
+                  <NavLink className="navbar-link" to={'/favorites'}>
+                    Favorites
+                  </NavLink>
                 </a>
               </li>
               <li class="nav-item">
@@ -102,20 +104,20 @@ const Navbar = ({ isAuthenticated, handleSignOut, profilePicture }) => {
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
                   <a class="dropdown-item" href="#">
-                    Action
+                    Your Profile
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item" href="#">
-                    Another action
+                    Your Favorites
                   </a>
                 </li>
                 <li>
                   <hr class="dropdown-divider" />
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">
-                    Something else here
+                  <a class="dropdown-item">
+                    <NavLink to="/settings">Your Settings</NavLink>
                   </a>
                 </li>
               </ul>

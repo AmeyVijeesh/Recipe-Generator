@@ -1,0 +1,140 @@
+body {
+  overflow-x: hidden;
+}
+
+.slick-slider {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -khtml-user-select: none;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slick-list {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.slick-track {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.slick-slide {
+  float: left;
+  height: 100%;
+  min-height: 1px;
+  display: none;
+}
+
+.slick-slide img {
+  width: 200vh;
+  height: 55vh;
+}
+.carousel-img {
+  width: 80%;
+  height: 55vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(img3.jpg);
+  border-radius: 10px;
+  margin-top: 4%;
+  position: relative;
+}
+
+.carousel-img2 {
+  width: 80%;
+  height: 55vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(img1.jpg);
+  border-radius: 10px;
+  margin-top: 4%;
+  position: relative;
+}
+
+.carousel-img3 {
+  width: 80%;
+  height: 55vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(img2.jpg);
+  border-radius: 10px;
+  margin-top: 4%;
+  position: relative;
+}
+
+.carousel-h2 {
+  position: absolute;
+  bottom: 15%;
+  left: 2%;
+  color: #fff;
+}
+
+.carousel-btn {
+  background-color: #000;
+  color: #fff;
+  border: 0;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 5%;
+  left: 2%;
+  font-size: 15px;
+  padding: 7px;
+}
+
+.carousel-btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.card {
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.card-inner {
+  margin: 60px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-img {
+  max-width: 100%;
+}
+
+.card-content {
+  text-align: center;
+}
+
+.featured-btn {
+  background-color: #000;
+  color: #fff;
+  border-radius: 5px;
+  border: 0;
+  padding: 7px;
+}
+
+.featured-btn:hover {
+  background-color: #fff;
+  color: #000;
+}

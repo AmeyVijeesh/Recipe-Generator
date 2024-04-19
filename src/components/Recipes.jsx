@@ -24,7 +24,7 @@ import {
   deleteDoc,
   getFirestore,
 } from 'firebase/firestore';
-import { Box, TextField, Button, IconButton } from '@mui/material';
+import { Box, TextField, Button, IconButton, Icon } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FormGroup from '@mui/material/FormGroup';
 import FormControl from '@mui/material/FormControl';
@@ -33,7 +33,7 @@ import Checkbox from '@mui/material/Checkbox';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 
-const Recipe = ({ user }) => {
+const Recipe = ({ user, healthScore, setHealthScore }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [type, setType] = useState('');
@@ -50,7 +50,6 @@ const Recipe = ({ user }) => {
   const navigate = useNavigate();
   const [favName, setFavName] = useState('');
   const [randomRecipes, setRandomRecipes] = useState([]);
-  const [healthScore, setHealthScore] = useState(0);
   const [displayedRecipes, setDisplayedRecipes] = useState([]);
   const [favorites, setFavorites] = useState({});
   const [searchIngredients, setSearchIngredients] = useState('');
@@ -136,6 +135,21 @@ const Recipe = ({ user }) => {
       await setDoc(userFavoritesRef, updatedFavorites);
     }
     setFavorites(updatedFavorites);
+  };
+
+  const handleSearchByIngredients = () => {
+    // Make API request to Spoonacular using searchIngredients
+    // Example: You need to replace YOUR_API_KEY with your actual Spoonacular API key
+    const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${searchIngredients}&apiKey=${apiKey}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setSearchResults(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
   };
 
   const handleChange = (event) => {
@@ -233,6 +247,10 @@ const Recipe = ({ user }) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log('Health Score:', healthScore);
+  }, [healthScore]);
 
   useEffect(() => {
     const fetchRandomRecipes = async () => {
@@ -346,14 +364,19 @@ const Recipe = ({ user }) => {
               </div>
               <div className="filter-div">
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <TextField
-                    type="text"
-                    value={searchIngredients}
-                    variant="outlined"
-                    onChange={handleSearchIngredientSearch}
-                    helperText="Enter Ingredients seperated by commas"
-                    placeholder="Enter ingredients"
-                  />
+                  <div>
+                    <TextField
+                      type="text"
+                      value={searchIngredients}
+                      variant="outlined"
+                      onChange={handleSearchIngredientSearch}
+                      helperText="Enter Ingredients seperated by commas"
+                      placeholder="Enter ingredients"
+                    />{' '}
+                    <IconButton onClick={handleSearchByIngredients}>
+                      <SearchIcon></SearchIcon>
+                    </IconButton>
+                  </div>
                   <TextField
                     type="text"
                     value={cuisine}

@@ -1,69 +1,93 @@
-// RecipeDetails.js
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import './recipeDetails.css';
+import Chip from '@mui/material/Chip';
 
-const RecipeDetails = ({
-  onClose,
-  isVegan,
-  isGlutenFree,
-  isHealthy,
-  ins,
-  healthScore,
-}) => {
+const RecipeDetails = ({ isVegan, isGlutenFree, isHealthy, healthScore }) => {
   const { state } = useLocation();
   const recipe = state && state.recipe;
   const navigate = useNavigate();
 
   if (!recipe) {
-    // Handle if recipe data is not available
     return <div>Recipe not found.</div>;
   }
 
-  const { instructions, extendedIngredients } = recipe; // Destructure instructions and extendedIngredients from recipe object
+  const { instructions, extendedIngredients } = recipe;
 
   return (
     <div>
-      <button
-        onClick={() => {
-          navigate('/');
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
         }}
       >
-        Home
-      </button>
-      <h2>{recipe.title}</h2>
-      <button
-        onClick={() => {
-          console.log(ins);
-        }}
-      >
-        debug
-      </button>
-      {recipe.author && <p>Author: {recipe.author}</p>}
-      <img src={recipe.image} alt={recipe.title} />
-      <h3>Ingredients:</h3>
-      <ul>
-        {extendedIngredients &&
-          extendedIngredients.map((ingredient, index) => (
-            <li key={index}>{ingredient.original}</li>
-          ))}
-      </ul>
-      <h2>Is Healthy : {isHealthy ? 'Yes' : 'No'}</h2>
-      <span>is vegan: {isVegan ? 'Vegan' : 'No '}</span>{' '}
-      <span>is gluten: {isGlutenFree ? 'glutenfree' : 'No '}</span>
-      <span>{ins}</span>
-      <p>Health Score: {healthScore}</p>
-      <h3>Instructions:</h3>
+        <h2 className="rd-title">{recipe.title}</h2>{' '}
+        {recipe.author && <p>Author: By {recipe.author}</p>}{' '}
+        <div className="rd-badges">
+          <span className="rd-badge">
+            {recipe.veryHealthy ? (
+              <Chip label="Very Healthy" color="success" />
+            ) : (
+              ''
+            )}
+          </span>
+          <span className="rd-badge">
+            {recipe.vegan ? <Chip label="Vegan" color="success" /> : ''}{' '}
+          </span>
+          <span className="rd-badge">
+            {recipe.vegetarian ? (
+              <Chip label="Vegetarian" color="success" />
+            ) : (
+              ''
+            )}
+          </span>
+          <span className="rd-badge">
+            {recipe.glutenFree ? (
+              <Chip label="Gluten Free" color="primary" />
+            ) : (
+              ''
+            )}
+          </span>
+          <Chip
+            label={`Health Score: ${recipe.healthScore}`}
+            color="secondary"
+          ></Chip>
+        </div>
+        <img src={recipe.image} alt={recipe.title} className="rd-img" />
+      </div>
+
+      <div>
+        <h3 className="rd-title" style={{ margin: '5%' }}>
+          Ingredients:
+        </h3>
+        <ol>
+          {extendedIngredients &&
+            extendedIngredients.map((ingredient, index) => (
+              <li key={index} className="rd-ol">
+                {ingredient.original}
+              </li>
+            ))}
+        </ol>
+      </div>
+
+      <h3 className="rd-title" style={{ margin: '5%' }}>
+        Instructions:
+      </h3>
       {instructions && (
-        <ul>
+        <ol>
           {instructions
-            .replace(/<\/?[^>]+(>|$)/g, '') // Remove HTML tags
+            .replace(/<\/?[^>]+(>|$)/g, '')
             .split('.')
             .map((instructions, index) => (
-              <li key={index}>{instructions.trim()}</li>
+              <li key={index} className="rd-ol">
+                {instructions.trim()}
+              </li>
             ))}
-        </ul>
+        </ol>
       )}
-      <button onClick={onClose}>Close</button>
     </div>
   );
 };

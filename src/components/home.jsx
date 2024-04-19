@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RecipeDetails from './recipeDetails';
-import { Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Carousel from './Carousel.jsx';
 import { auth, db, storage } from './firebase.js';
 import {
   collection,
@@ -13,18 +13,24 @@ import {
   doc,
   getDoc,
   setDoc,
-  serverTimestamp,
   deleteDoc,
-  getFirestore,
 } from 'firebase/firestore';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import img4 from './img4.jpeg';
+import img5 from './img5.jpeg';
+import img6 from './img6.jpeg';
+import img7 from './img7.jpeg';
+import img8 from './img8.jpeg';
+import img9 from './img9.jpeg';
+import img10 from './img10.jpeg';
+import img11 from './img11.webp';
+import img12 from './img12.jpeg';
+import img13 from './img13.jpeg';
+import img14 from './img14.jpeg';
 const Home = ({
   user,
   setUser,
@@ -32,6 +38,8 @@ const Home = ({
   setName,
   profilePicture,
   setProfilePicture,
+  itemId,
+  setItemId,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cuisine, setCuisine] = useState('');
@@ -48,29 +56,27 @@ const Home = ({
   const [ins, setIns] = useState(null);
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState({});
-  const [favName, setFavName] = useState('');
   const [healthScore, setHealthScore] = useState(0);
 
   const [todos, setTodos] = useState([]);
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    const storageRef = ref(
-      storage,
-      `profile_pictures/${user.uid}/${file.name}`
-    );
-    try {
-      await uploadBytes(storageRef, file);
-
-      const downloadURL = await getDownloadURL(storageRef);
-
-      const userDocRef = doc(db, 'users', user.uid);
-      await setDoc(userDocRef, { profilePic: downloadURL }, { merge: true });
-
-      setProfilePicture(downloadURL);
-    } catch (error) {
-      console.error('Error uploading profile picture:', error);
-    }
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 2, // Number of cards visible at a time
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding: '100px', // Adjust this value for space between cards
+    responsive: [
+      {
+        breakpoint: 768, // Adjust breakpoints as needed
+        settings: {
+          slidesToShow: 1,
+          centerPadding: '50px',
+        },
+      },
+    ],
   };
 
   const fetchProfilePicture = async () => {
@@ -151,30 +157,6 @@ const Home = ({
     fetchUserName();
   }, [user]);
 
-  const toggleFavorite = async (recipeId, recipeName) => {
-    if (!user) return;
-
-    const userFavoritesRef = doc(db, 'favorites', user.uid);
-    let updatedFavorites = { ...favorites };
-
-    if (updatedFavorites[recipeId]) {
-      delete updatedFavorites[recipeId];
-    } else {
-      updatedFavorites[recipeId] = recipeName;
-    }
-
-    if (Object.keys(updatedFavorites).length === 0) {
-      await deleteDoc(userFavoritesRef);
-    } else {
-      await setDoc(userFavoritesRef, updatedFavorites);
-    }
-    setFavorites(updatedFavorites);
-  };
-
-  const handleChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
   const handleCuisineChange = (event) => {
     setCuisine(event.target.value);
   };
@@ -230,11 +212,10 @@ const Home = ({
     }
   };
 
-  const openRecipeDetails = async (recipe) => {
-    setIsLoading(true);
+  const openRecipeDetails = async (id) => {
     try {
       const response = await axios.get(
-        `https://api.spoonacular.com/recipes/${recipe.id}/information`,
+        `https://api.spoonacular.com/recipes/${id}/information`,
         {
           params: {
             apiKey: apiKey,
@@ -242,23 +223,14 @@ const Home = ({
           },
         }
       );
-      setSelectedRecipe(response.data);
-      setIsHealthy(response.data.veryHealthy);
-      setIsVegan(response.data.vegan);
-      setHealthScore(response.data.healthScore);
-      setIsGlutenFree(response.data.glutenFree);
-      console.log(JSON.stringify(response.data, null, 2));
-      console.log(response.data.healthScore);
-      console.log(healthScore);
-      navigate(`/recipe/${recipe.id}`, {
+
+      navigate(`/recipe/${id}`, {
         state: {
           recipe: response.data,
         },
       });
     } catch (error) {
       console.error('Error fetching recipe details:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -284,152 +256,199 @@ const Home = ({
     }
   }, [user]);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      setUser(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
   return (
     <>
-      <button
-        onClick={() => {
-          navigate('/auth');
+      <Carousel
+        itemId={itemId}
+        setItemId={setItemId}
+        selectedRecipe={selectedRecipe}
+      />
+
+      <h1
+        style={{
+          color: 'grey',
+          textAlign: 'center',
+          textDecoration: 'underline',
+          margin: '5%',
         }}
       >
-        Auth
-      </button>
-      <div>
-        {user ? (
-          <div>
-            <h2>Yo {name}!</h2>
-            <Button
-              onClick={handleSignOut}
-              variant="contained"
-              color="secondary"
+        Featured Recipes
+      </h1>
+      <Slider {...settings}>
+        <div className="card" style={{ width: '10px' }}>
+          <div className="card-inner">
+            <div>
+              <img src={img5} className="card-img" />
+            </div>
+            <h3>Pasta with Breadcrumbs</h3>
+            <button
+              className="featured-btn"
+              onClick={() => openRecipeDetails(650482)}
             >
-              Sign Out
-            </Button>
+              View Recipe
+            </button>
           </div>
-        ) : (
-          <h1>Sign in please</h1>
-        )}
-      </div>
-      <h2>
-        {' '}
-        favs "{' '}
-        {Object.keys(favorites).length > 0 ? (
-          <ul>
-            {Object.entries(favorites).map(([recipeId, recipeName]) => (
-              <li key={recipeId}>
-                <p>{recipeName}</p>
-                <button onClick={() => toggleFavorite(recipeId, recipeName)}>
-                  Remove from Favorites
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No favorites added yet.</p>
-        )}
-      </h2>
-      <button>Open it!</button>{' '}
-      <input type="file" accept="image/*" onChange={handleFileUpload} />
-      <div>
-        <h1>Recipe Search</h1>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleChange}
-          placeholder="Enter ingredients or keywords..."
-        />
-        <input
-          type="text"
-          value={cuisine}
-          onChange={handleCuisineChange}
-          placeholder="Enter Cuisine"
-        />
-
-        <select value={type} onChange={handleTypeChange}>
-          {' '}
-          {/* Use a select dropdown for meal type */}
-          <option value="">Select Meal Type</option>
-          <option value="breakfast">Breakfast</option>
-          <option value="brunch">Brunch</option>
-          <option value="pancake">Pancake</option>
-          <option value="waffle">Waffle</option>
-          <option value="lunch">Lunch</option>
-          {/* Add more options as needed */}
-        </select>
-
-        <div>
-          <input
-            type="checkbox"
-            checked={isVegetarian}
-            onChange={handleVegetarianChange}
-          />
-          <label>Vegetarian</label>
         </div>
-
-        <div>
-          <input
-            type="checkbox"
-            checked={isVegan}
-            onChange={handleVeganChange}
-          />
-          <label>Vegan</label>
-        </div>
-
-        <div>
-          <input
-            type="checkbox"
-            checked={isGlutenFree}
-            onChange={handleGlutenFreeChange}
-          />
-          <label>Gluten-Free</label>
-        </div>
-
-        <div>
-          <input
-            type="checkbox"
-            checked={isDairyFree}
-            onChange={handleDairyFreeChange}
-          />
-          <label>Dairy-Free</label>
-        </div>
-
-        <button onClick={handleSearch} disabled={isLoading}>
-          {isLoading ? 'Searching...' : 'Search Recipes'}
-        </button>
-        {searchResults.length > 0 ? (
-          <div>
-            <h2>Search Results:</h2>
-            <ul>
-              {searchResults.map((recipe) => (
-                <li key={recipe.id}>
-                  <h3>{recipe.title}</h3>
-                  <img src={recipe.image} alt={recipe.title} />
-                  <p onClick={() => openRecipeDetails(recipe)}>
-                    Click here for instructions and details
-                  </p>
-                  <button
-                    onClick={() => toggleFavorite(recipe.id, recipe.title)}
-                  >
-                    {favorites[recipe.id]
-                      ? 'Remove from Favorites'
-                      : 'Add to Favorites'}
-                  </button>
-                </li>
-              ))}
-            </ul>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img6} className="card-img" />
+            <h3>Beef Bourguignon</h3>
+            <button
+              className="featured-btn"
+              onClick={() => openRecipeDetails(641842)}
+            >
+              View Recipe
+            </button>
           </div>
-        ) : (
-          <p>No results available.</p>
-        )}
-      </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img9} className="card-img" />
+            <h3>Cherry Ice Cream</h3>
+            <button
+              className="featured-btn"
+              onClick={() => {
+                openRecipeDetails(637761);
+              }}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img8} className="card-img" />
+            <h3>Eggs Benedict</h3>
+            <button
+              className="featured-btn"
+              onClick={() => {
+                openRecipeDetails(639594);
+              }}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img4} className="card-img" />
+            <h3>Turkish Chicken Salad</h3>
+            <button
+              className="featured-btn"
+              onClick={() => openRecipeDetails(664090)}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img7} className="card-img" />
+            <h3>Garlic Bread</h3>
+            <button
+              className="featured-btn"
+              onClick={() => {
+                openRecipeDetails(715559);
+              }}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+      </Slider>
+
+      <h1
+        style={{
+          color: 'grey',
+          textAlign: 'center',
+          textDecoration: 'underline',
+          margin: '5%',
+        }}
+      >
+        Latest Recipes
+      </h1>
+      <Slider {...settings}>
+        <div className="card" style={{ width: '10px' }}>
+          <div className="card-inner">
+            <div>
+              <img src={img10} className="card-img" />
+            </div>
+            <h3>Pasta with Breadcrumbs</h3>
+            <button
+              className="featured-btn"
+              onClick={() => openRecipeDetails(716429)}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img12} className="card-img" />
+            <h3>Fish Fillets in Coconut Curry</h3>
+            <button
+              className="featured-btn"
+              onClick={() => openRecipeDetails(642941)}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img14} className="card-img" />
+            <h3>Banana Creme Brulee</h3>
+            <button
+              className="featured-btn"
+              onClick={() => {
+                openRecipeDetails(634070);
+              }}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img8} className="card-img" />
+            <h3>Eggs Benedict</h3>
+            <button
+              className="featured-btn"
+              onClick={() => {
+                openRecipeDetails(639594);
+              }}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img13} className="card-img" />
+            <h3>Peppermint Brookie Pie</h3>
+            <button
+              className="featured-btn"
+              onClick={() => openRecipeDetails(655668)}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-inner">
+            <img src={img11} className="card-img" />
+            <h3>Oatmeal Pancake</h3>
+            <button
+              className="featured-btn"
+              onClick={() => {
+                openRecipeDetails(653472);
+              }}
+            >
+              View Recipe
+            </button>
+          </div>
+        </div>
+      </Slider>
       {selectedRecipe && (
         <RecipeDetails
           recipe={selectedRecipe}

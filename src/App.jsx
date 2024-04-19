@@ -4,13 +4,15 @@ import SignUp from './components/SignUp';
 import RecipeDetails from './components/recipeDetails';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Navbar from './components/navbar';
-import Recipe from './components/recipes';
+import Recipe from './components/Recipes';
 import SignIn from './components/signIn';
 import ResetPassword from './components/ResetPassword';
 import { auth } from './components/firebase';
 import { signOut } from 'firebase/auth';
 import LoginForm from './components/fav';
 import Favorites from './components/Favorites';
+import Settings from './components/settings';
+import About from './components/about';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -20,6 +22,7 @@ const App = () => {
   );
   const [healthScore, setHealthScore] = useState(0);
   const [favorites, setFavorites] = useState({});
+  const [itemId, setItemId] = useState(764752);
 
   const handleSignOut = async () => {
     try {
@@ -46,9 +49,11 @@ const App = () => {
                 favorites={favorites}
                 setFavorites={setFavorites}
                 user={user}
+                healthScore={healthScore}
               />
             }
           />{' '}
+          <Route element={<About />}> </Route>
           <Route path="/signin" element={<SignIn setUser={setUser} />} />{' '}
           <Route
             path="/signup"
@@ -63,6 +68,8 @@ const App = () => {
                 setUser={setUser}
                 favorites={favorites}
                 setFavorites={setFavorites}
+                healthScore={healthScore}
+                setHealthScore={setHealthScore}
               />
             }
           />
@@ -78,11 +85,23 @@ const App = () => {
                 setProfilePicture={setProfilePicture}
                 healthScore={healthScore}
                 setHealthScore={setHealthScore}
+                itemId={itemId}
+                setItemId={setItemId}
               />
             }
           />
           <Route path="/test" element={<LoginForm />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
+          <Route
+            path="/settings"
+            element={
+              <Settings
+                profilePicture={profilePicture}
+                setProfilePicture={setProfilePicture}
+                user={user}
+              />
+            }
+          />
         </Routes>
       </div>
     </BrowserRouter>

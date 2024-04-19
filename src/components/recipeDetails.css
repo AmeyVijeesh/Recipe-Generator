@@ -1,0 +1,25 @@
+.rd-title {
+  color: rgb(154, 154, 154);
+  text-decoration: underline;
+  text-align: center;
+  margin: 2%;
+}
+
+.rd-img {
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+.rd-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rd-badge {
+  margin: 10px;
+}
+
+.rd-ol {
+  font-size: 1.2rem;
+}
