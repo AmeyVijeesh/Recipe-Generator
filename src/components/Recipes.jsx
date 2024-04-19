@@ -3,28 +3,10 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import axios from 'axios';
 import RecipeDetails from './recipeDetails';
 import './Recipes.css';
-import { auth, db, storage } from './firebase.js';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  deleteDoc,
-  getFirestore,
-} from 'firebase/firestore';
-import { Box, TextField, Button, IconButton, Icon } from '@mui/material';
+import { db } from './firebase.js';
+
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { TextField, Button, IconButton, Icon } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FormGroup from '@mui/material/FormGroup';
 import FormControl from '@mui/material/FormControl';
@@ -53,6 +35,20 @@ const Recipe = ({ user, healthScore, setHealthScore }) => {
   const [displayedRecipes, setDisplayedRecipes] = useState([]);
   const [favorites, setFavorites] = useState({});
   const [searchIngredients, setSearchIngredients] = useState('');
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const loadMoreRecipes = async () => {
     try {
@@ -119,7 +115,6 @@ const Recipe = ({ user, healthScore, setHealthScore }) => {
 
   const toggleFavorite = async (recipeId, recipeName) => {
     if (!user) return;
-
     const userFavoritesRef = doc(db, 'favorites', user.uid);
     let updatedFavorites = { ...favorites };
 
@@ -261,7 +256,7 @@ const Recipe = ({ user, healthScore, setHealthScore }) => {
           {
             params: {
               apiKey: apiKey3,
-              number: 16, // Fetch 16 recipes initially
+              number: 16,
             },
           }
         );

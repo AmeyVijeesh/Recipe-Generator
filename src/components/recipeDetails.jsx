@@ -2,8 +2,11 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './recipeDetails.css';
 import Chip from '@mui/material/Chip';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { db } from './firebase';
+import { Button } from '@mui/material';
 
-const RecipeDetails = ({ isVegan, isGlutenFree, isHealthy, healthScore }) => {
+const RecipeDetails = ({ user }) => {
   const { state } = useLocation();
   const recipe = state && state.recipe;
   const navigate = useNavigate();
@@ -13,6 +16,26 @@ const RecipeDetails = ({ isVegan, isGlutenFree, isHealthy, healthScore }) => {
   }
 
   const { instructions, extendedIngredients } = recipe;
+
+  const toggleFavorite = async (recipeId, recipeName) => {
+    if (!user) return;
+
+    const userFavoritesRef = doc(db, 'favorites', user.uid);
+    let updatedFavorites = { ...favorites };
+
+    if (updatedFavorites[recipeId]) {
+      delete updatedFavorites[recipeId];
+    } else {
+      updatedFavorites[recipeId] = recipeName;
+    }
+
+    if (Object.keys(updatedFavorites).length === 0) {
+      await deleteDoc(userFavoritesRef);
+    } else {
+      await setDoc(userFavoritesRef, updatedFavorites);
+    }
+    setFavorites(updatedFavorites);
+  };
 
   return (
     <div>
@@ -57,6 +80,12 @@ const RecipeDetails = ({ isVegan, isGlutenFree, isHealthy, healthScore }) => {
           ></Chip>
         </div>
         <img src={recipe.image} alt={recipe.title} className="rd-img" />
+        <button
+          onClick={() => toggleFavorite(recipe.id, recipe.title)}
+          className="favorites-button"
+        >
+          Add to Favorites
+        </button>
       </div>
 
       <div>

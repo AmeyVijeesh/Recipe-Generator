@@ -49,7 +49,9 @@ const Navbar = ({ isAuthenticated, handleSignOut, profilePicture }) => {
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  About
+                  <NavLink className="navbar-link" to={'/about'}>
+                    About
+                  </NavLink>
                 </a>
               </li>
             </ul>
@@ -104,12 +106,16 @@ const Navbar = ({ isAuthenticated, handleSignOut, profilePicture }) => {
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
                   <a class="dropdown-item" href="#">
-                    Your Profile
+                    <NavLink className="navbar-link" to="/profile">
+                      Your Profile
+                    </NavLink>{' '}
                   </a>
                 </li>
                 <li>
                   <a class="dropdown-item" href="#">
-                    Your Favorites
+                    <NavLink className="navbar-link" to="/favorites">
+                      Your Favorites
+                    </NavLink>
                   </a>
                 </li>
                 <li>

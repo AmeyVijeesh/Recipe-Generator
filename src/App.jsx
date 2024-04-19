@@ -13,6 +13,9 @@ import LoginForm from './components/fav';
 import Favorites from './components/Favorites';
 import Settings from './components/settings';
 import About from './components/about';
+import Footer from './components/footer';
+import Profile from './components/profile';
+import PNF from './components/404';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -53,7 +56,7 @@ const App = () => {
               />
             }
           />{' '}
-          <Route element={<About />}> </Route>
+          <Route element={<About />} path="/about" />
           <Route path="/signin" element={<SignIn setUser={setUser} />} />{' '}
           <Route
             path="/signup"
@@ -102,7 +105,15 @@ const App = () => {
               />
             }
           />
+          <Route
+            element={
+              <Profile user={user} profilePic={profilePicture} name={name} />
+            }
+            path="/profile"
+          />
+          <Route path="*" element={<PNF />} />
         </Routes>
+        <Footer />
       </div>
     </BrowserRouter>
   );

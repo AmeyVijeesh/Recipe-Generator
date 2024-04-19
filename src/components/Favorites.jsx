@@ -1,26 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { auth, db, storage } from './firebase.js';
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  deleteDoc,
-  getFirestore,
-} from 'firebase/firestore';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db } from './firebase.js';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 
 const Favorites = ({ favorites, setFavorites, user, healthScore }) => {
   const [recipeImages, setRecipeImages] = useState({});
@@ -52,13 +33,14 @@ const Favorites = ({ favorites, setFavorites, user, healthScore }) => {
 
   const apiKey = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY;
   const apiKey3 = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY3;
+  const apiKey2 = import.meta.env.VITE_REACT_APP_SPOONACULAR_API_KEY_BALANCE;
 
   const fetchRecipeImages = async (favoritesData) => {
     const recipesWithImages = {};
     for (const [recipeId, _] of Object.entries(favoritesData)) {
       try {
         const response = await fetch(
-          `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${apiKey3}`
+          `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${apiKey2}`
         );
         const data = await response.json();
         recipesWithImages[recipeId] = data.image;
