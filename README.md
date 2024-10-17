@@ -1,1 +1,3 @@
-## WIP Recipe Generator
+## Recipe Generator
+
+Uses Spoonacular API.
